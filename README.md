@@ -52,7 +52,7 @@ susceptibility-distribution-misspecification/
 
 ### Heterogeneous SEIR model
 
-The code implements a heterogeneous SEIR framework in which susceptibility varies across individuals. The continuous susceptibility distribution is discretised into finite groups with weights \(q_i\) and representative susceptibilities \(x_i\).
+The code implements a heterogeneous SEIR of Gomes et al (2022) in which susceptibility varies across individuals. The continuous susceptibility distribution is discretised into finite groups with weights \(q_i\) and representative susceptibilities \(x_i\).
 
 ### Susceptibility distributions
 
@@ -108,8 +108,8 @@ source("install_packages.R")
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/<your-github-username>/susceptibility-distribution-misspecification.git
-cd susceptibility-distribution-misspecification
+git clone https://github.com/<your-github-username>/susceptibility-misspecification-forecasting.git
+cd susceptibility-misspecification-forecasting
 ```
 
 2. Install R dependencies:
@@ -195,7 +195,7 @@ Typical output files include:
 
 Output filenames depend on the value of `SIMULATE_WITH` inside each script.
 
-## Key Findings Reproduced by the Code
+##  Some Findings Reproduced by the Code
 
 1. Gamma and lognormal susceptibility distributions can produce distinct epidemic trajectories even when they share the same mean and coefficient of variation.
 2. These differences are small when heterogeneity is low, but become more visible when \(\nu\) is moderate or high.
