@@ -586,7 +586,7 @@ daily_incidence_hom <- function(params_vec, init_state, times) {
 # 5.3 Parameter-vector builders
 # -----------------------------------------------------------------------------
 
-make_gamma_components <- function(R0, v, t0, c2) {
+create_gamma_components <- function(R0, v, t0, c2) {
   alpha <- 1 / (v^2)
   
   d <- Discretize_gamma_LA_SM(
@@ -626,7 +626,7 @@ make_gamma_components <- function(R0, v, t0, c2) {
   list(params = params, q = d$q)
 }
 
-make_lognormal_components <- function(R0, v, t0, c2) {
+create_lognormal_components <- function(R0, v, t0, c2) {
   d <- Discretize_lognormal_LA_SM(
     n_groups = K,
     CV = v,
@@ -663,7 +663,7 @@ make_lognormal_components <- function(R0, v, t0, c2) {
   list(params = params, q = d$q)
 }
 
-make_hom_params <- function(R0, t0, c2) {
+create_hom_params <- function(R0, t0, c2) {
   c(
     R0 = R0,
     v = 0,
@@ -718,14 +718,14 @@ percent_difference <- function(a, b) {
 # -----------------------------------------------------------------------------
 
 truth_components <- if (SIMULATE_WITH == "gamma") {
-  make_gamma_components(
+  create_gamma_components(
     R0 = R0_spec,
     v = CV_value,
     t0 = t0_spec,
     c2 = c_value2_spec
   )
 } else {
-  make_lognormal_components(
+  create_lognormal_components(
     R0 = R0_spec,
     v = CV_value,
     t0 = t0_spec,
@@ -766,7 +766,7 @@ forecast_peak_from_fit <- function(fit, fitted_model) {
   
   if (fitted_model == "gamma") {
     
-    comp <- make_gamma_components(
+    comp <- create_gamma_components(
       R0 = fit$R0,
       v = fit$v,
       t0 = fit$t0,
@@ -790,7 +790,7 @@ forecast_peak_from_fit <- function(fit, fitted_model) {
     
   } else if (fitted_model == "lognormal") {
     
-    comp <- make_lognormal_components(
+    comp <- create_lognormal_components(
       R0 = fit$R0,
       v = fit$v,
       t0 = fit$t0,
@@ -814,7 +814,7 @@ forecast_peak_from_fit <- function(fit, fitted_model) {
     
   } else if (fitted_model == "homogeneous") {
     
-    params_fit <- make_hom_params(
+    params_fit <- create_hom_params(
       R0 = fit$R0,
       t0 = fit$t0,
       c2 = fit$c_value2
@@ -836,7 +836,7 @@ forecast_peak_from_fit <- function(fit, fitted_model) {
   compute_peak_metrics(traj_fit, times_eval)
 }
 
-make_peak_diff_row <- function(fit, fitted_model, metrics_fit) {
+create_peak_diff_row <- function(fit, fitted_model, metrics_fit) {
   data.frame(
     CV_true = CV_value,
     truth_dist = SIMULATE_WITH,
@@ -895,7 +895,7 @@ process_model_fits <- function(valid_fits, fitted_model) {
     )
     
     if (!is.null(metrics_i)) {
-      rows[[i]] <- make_peak_diff_row(fit_i, fitted_model, metrics_i)
+      rows[[i]] <- create_peak_diff_row(fit_i, fitted_model, metrics_i)
     }
   }
   
@@ -976,14 +976,14 @@ fit_hom <- median_hom_fit(valid_homogeneous)
 # 5.8 Mean fitted trajectories
 # -----------------------------------------------------------------------------
 
-gam_components <- make_gamma_components(
+gam_components <- create_gamma_components(
   R0 = fit_gam$R0,
   v = fit_gam$v,
   t0 = fit_gam$t0,
   c2 = fit_gam$c2
 )
 
-log_components <- make_lognormal_components(
+log_components <- create_lognormal_components(
   R0 = fit_log$R0,
   v = fit_log$v,
   t0 = fit_log$t0,
@@ -1023,7 +1023,7 @@ traj_log <- daily_incidence_het(
   dplyr::filter(time >= 1)
 
 if (!is.null(fit_hom)) {
-  params_hom <- make_hom_params(
+  params_hom <- create_hom_params(
     R0 = fit_hom$R0,
     t0 = fit_hom$t0,
     c2 = fit_hom$c2
@@ -1091,9 +1091,9 @@ create_het_bands <- function(mu, Sigma, fitted_model, E0, I0) {
     c2_j <- expit(draws[j, 4])
     
     comp_j <- if (fitted_model == "gamma") {
-      make_gamma_components(R0_j, v_j, t0_j, c2_j)
+      create_gamma_components(R0_j, v_j, t0_j, c2_j)
     } else {
-      make_lognormal_components(R0_j, v_j, t0_j, c2_j)
+      create_lognormal_components(R0_j, v_j, t0_j, c2_j)
     }
     
     init_j <- initDistr(q = comp_j$q, K = K, E0 = E0, I0 = I0, N = N)
@@ -1124,7 +1124,7 @@ create_hom_bands <- function(mu, Sigma, init_state) {
   M <- matrix(NA_real_, nrow = length(times_eval), ncol = N_SAMPLES)
   
   for (j in seq_len(N_SAMPLES)) {
-    params_j <- make_hom_params(
+    params_j <- create_hom_params(
       R0 = exp(draws[j, 1]),
       t0 = exp(draws[j, 2]),
       c2 = expit(draws[j, 3])
